@@ -1,16 +1,29 @@
 pipeline {
     agent any
+
+    environment {
+        DOCKER_IMAGE = "Vijaykumar0502/jenkins-ci-demo"
+    }
+
     stages {
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
-                echo 'Build success'
+                script {
+                    docker.build(DOCKER_IMAGE)
+                }
             }
         }
-        stage('Test') {
+
+        stage('Docker Login & Push') {
             steps {
-                echo 'Test success'
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-creds') {
+                        docker.image(DOCKER_IMAGE).push("latest")
+                    }
+                }
             }
         }
     }
 }
+
 
